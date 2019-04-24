@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RateFlood">
+    tools:context=".RateActivityFragment"
+    tools:showIn="@layout/activity_rate">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -24,11 +26,11 @@
             android:background="@color/input_background_dark"
             android:fillViewport="true"
             android:orientation="vertical">
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-</LinearLayout>
+            </LinearLayout>
             <Spinner
                 android:id="@+id/spinner"
                 android:layout_width="match_parent"
@@ -67,11 +69,23 @@
                     android:src="@drawable/feet" />
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="400dp"
-                    android:layout_weight="1"
+                    android:baselineAligned="false"
                     android:gravity="left|bottom"
                     android:orientation="vertical">
+
+                    <ImageButton
+                        android:id="@+id/imageView3"
+                        android:layout_width="match_parent"
+                        android:layout_height="126dp"
+                        android:src="@drawable/flood" />
+
+                    <ImageButton
+                        android:id="@+id/image"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/camera" />
 
                     <RadioGroup
                         android:id="@+id/radioGroup"
@@ -115,6 +129,7 @@
                             android:checked="true"
                             android:text="HEEL" />
                     </RadioGroup>
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -136,6 +151,4 @@
         </LinearLayout>
 
     </ScrollView>
-
-
 </FrameLayout>

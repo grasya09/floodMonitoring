@@ -25,15 +25,13 @@
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "550637276690-usljub28m88e72cqmutbh852eaceju4a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
@@ -64,20 +62,13 @@
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
               "client_id": "550637276690-usljub28m88e72cqmutbh852eaceju4a.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
       }
     },
@@ -98,6 +89,14 @@
           }
         },
         {
+          "client_id": "550637276690-dnfo96r0mm31ofkr3ikccitjrurvvhgs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.project.grace.floodmeterapp",
+            "certificate_hash": "91991e319ac18f2b09af8d5754a49831956f60a7"
+          }
+        },
+        {
           "client_id": "550637276690-usljub28m88e72cqmutbh852eaceju4a.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -108,20 +107,13 @@
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
               "client_id": "550637276690-usljub28m88e72cqmutbh852eaceju4a.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
       }
     }

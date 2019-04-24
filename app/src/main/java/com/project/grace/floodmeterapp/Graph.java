@@ -60,7 +60,7 @@ public class Graph extends Fragment {
     private final String message = "You are not connected to the internet!";
     private boolean isDataConstant = true;
     private View rootView;
-    private ProgressDialog pDialog;
+    private ProgressDialog progressDialog;
 
     private OnFragmentInteractionListener mListener;
 
@@ -84,7 +84,7 @@ public class Graph extends Fragment {
         setupChart();
 
         WaterLevelMonitoring viewData = new WaterLevelMonitoring();
-        viewData.execute();
+        viewData.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         return rootView;
     }
 
@@ -139,9 +139,6 @@ public class Graph extends Fragment {
 
 
     class WaterLevelMonitoring extends AsyncTask<Void, Void, Void> {
-
-        ProgressDialog progressDialog;
-
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         protected Void doInBackground(Void... voids) {
@@ -158,7 +155,7 @@ public class Graph extends Fragment {
                 }
 
             } catch (MalformedURLException e) {
-                Log.d(TAG, e.getMessage());
+                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -178,7 +175,7 @@ public class Graph extends Fragment {
                     ArrayList<Entry> jsonMap = new ArrayList<>();
 
                     int pos = 0;
-                    for (int i = jsonArray.length()-1; i >= 0 ; i--) {
+                    for (int i = jsonArray.length() - 1; i >= 0; i--) {
                         JSONObject jObject = jsonArray.getJSONObject(i);
                         String dateRecord = jObject.getString("Datetime Read");
                         float waterLevel = Float.parseFloat(jObject.getString("Waterlevel"));
@@ -239,7 +236,8 @@ public class Graph extends Fragment {
         protected void onPreExecute() {
             progressDialog = ProgressDialog.show(rootView.getContext(),
                     "Fetching API Data...",
-                    "Please patiently wait.");        }
+                    "Please patiently wait.");
+        }
 
         @Override
         protected void onProgressUpdate(Void... values) {

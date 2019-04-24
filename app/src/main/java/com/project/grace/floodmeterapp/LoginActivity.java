@@ -32,6 +32,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.project.grace.floodmeterapp.helpers.EmailValidator;
@@ -57,7 +58,11 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        FirebaseApp.initializeApp(this);
+        firebaseAuth = FirebaseAuth.getInstance();
         updateUI(firebaseAuth.getCurrentUser());
+
+
     }
 
     @Override
@@ -67,8 +72,6 @@ public class LoginActivity extends AppCompatActivity {
         // Set up the login form.
 
         emailValidator = new EmailValidator();
-        firebaseAuth = FirebaseAuth.getInstance();
-
         txtRegister = findViewById(R.id.register_new);
         txtPassword = findViewById(R.id.password);
         txtEmail = findViewById(R.id.email);

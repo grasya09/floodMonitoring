@@ -289,10 +289,13 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_rate:
                 if (locale != null) {
+
+                    Intent intent = new Intent(this, RateActivity.class);
                     bundle = new Bundle();
                     bundle.putDoubleArray("locale", new double[]{locale.getLatitude(), locale.getLongitude()});
-                    fragment = RateFlood.getInstance();
-                    fragment.setArguments(bundle);
+                    intent.putExtras(bundle); //Put your id to your next Intent
+                    startActivity(intent);
+                    finish();
                 } else {
                     showAlert(NO_LOCATION);
                     fragment = new NoLocation();
