@@ -1,6 +1,10 @@
 package com.project.grace.floodmeterapp;
 
-public class CrowdSource {
+import android.graphics.Bitmap;
+
+import java.io.Serializable;
+
+public class CrowdSource{
 
     int crowdsource;
 
@@ -15,8 +19,9 @@ public class CrowdSource {
     String userID;
     String tag;
     String dateAdded;
-    float lat;
-    float lon;
+    double lat;
+    double lon;
+    byte[] image;
 
     public CrowdSource(){
 
@@ -50,18 +55,22 @@ public class CrowdSource {
         this.dateAdded = dateAdded;
     }
 
-    public float getLat() { return lat;
+    public double getLat() { return lat;
     }
 
-    public void setLat(float lat) {
+    public void setLat(double lat) {
         this.lat = lat;
     }
 
-    public float getLon() {
+    public double getLon() {
         return lon;
     }
 
-    public void setLon(float lon) {
+    public void setLon(double lon) {
         this.lon = lon;
     }
+
+    public void setImage(byte[] image){ this.image = image; }
+
+    public byte[] getImage(){return this.image;}
 }
