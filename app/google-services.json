@@ -1,0 +1,122 @@
+{
+  "project_info": {
+    "project_number": "550637276690",
+    "firebase_url": "https://waterlevelapplication.firebaseio.com",
+    "project_id": "waterlevelapplication",
+    "storage_bucket": "waterlevelapplication.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:550637276690:android:9d136788107e6380",
+        "android_client_info": {
+          "package_name": "com.example.exprezoe.floodapps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "550637276690-usljub28m88e72cqmutbh852eaceju4a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMim6gkmVk23YUhzYoMpJgSBX0Ielr7Is"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "550637276690-usljub28m88e72cqmutbh852eaceju4a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:550637276690:android:cf8df4b0d458f727",
+        "android_client_info": {
+          "package_name": "com.grace.floodmeterapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "550637276690-pcs33il88a9c2inogeuntsujbuv76svt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.grace.floodmeterapp",
+            "certificate_hash": "7c585f04664f88f53715c134d978ff4e888aa8aa"
+          }
+        },
+        {
+          "client_id": "550637276690-usljub28m88e72cqmutbh852eaceju4a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMim6gkmVk23YUhzYoMpJgSBX0Ielr7Is"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "550637276690-usljub28m88e72cqmutbh852eaceju4a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:550637276690:android:3c7ec233c024b73f",
+        "android_client_info": {
+          "package_name": "com.project.grace.floodmeterapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "550637276690-ck9iel2t9s0v2cq517b20g5f6tj5qflf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.project.grace.floodmeterapp",
+            "certificate_hash": "7c585f04664f88f53715c134d978ff4e888aa8aa"
+          }
+        },
+        {
+          "client_id": "550637276690-dnfo96r0mm31ofkr3ikccitjrurvvhgs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.project.grace.floodmeterapp",
+            "certificate_hash": "91991e319ac18f2b09af8d5754a49831956f60a7"
+          }
+        },
+        {
+          "client_id": "550637276690-usljub28m88e72cqmutbh852eaceju4a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMim6gkmVk23YUhzYoMpJgSBX0Ielr7Is"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "550637276690-usljub28m88e72cqmutbh852eaceju4a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
