@@ -15,7 +15,8 @@
            android:id="@+id/pic"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
-           android:layout_marginTop="8dp" />
+           android:layout_marginTop="8dp"
+           android:src="@drawable/camera"/>
 
        <TextView
            android:layout_width="wrap_content"
@@ -27,16 +28,14 @@
            android:textColor="#333333"
            android:textSize="14sp"
            style="bold"/>
-       
+
        <TextView
+           android:id="@+id/maker_snippest"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:ellipsize="end"
            android:maxLines="10"
-           android:textSize="14sp"
            android:textColor="#111111"
-           android:id="@+id/maker_snippest"
-           />
+           android:textSize="14sp"/>
    </LinearLayout>
-
 </LinearLayout>

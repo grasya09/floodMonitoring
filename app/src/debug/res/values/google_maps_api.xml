@@ -25,5 +25,5 @@
 <!--</resources>-->
 
     //new
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBhrCpwUKyVoUnYPxyDC4Xzeg3R_Zjul2o</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDgy1Ba7XCEb-ouzlsAkGuPkpTGSqeNMNc</string>
 </resources>
