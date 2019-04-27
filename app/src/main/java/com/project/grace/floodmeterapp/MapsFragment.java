@@ -14,12 +14,18 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -41,6 +47,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.project.grace.floodmeterapp.PhilSensorData.DataWorker;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +55,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -152,6 +161,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+
         return false;
     }
 
@@ -182,33 +192,43 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
         ArrayList<CrowdSource> data = new ArrayList<>();
 
         refRainFall.addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        //Get map of users in datasnapshot
+            new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    //Get map of users in datasnapshot
+                    if (dataSnapshot.hasChildren()) {
+//                        collectCrowdsource((Map<String, Object>) Objects.requireNonNull(dataSnapshot.getValue()));
 
-                        if (dataSnapshot.hasChildren())
-                            collectCrowdsource((Map<String, Object>) Objects.requireNonNull(dataSnapshot.getValue()));
+                        Map<String, CrowdSource> td = new HashMap<String, CrowdSource>();
+                        for (DataSnapshot jobSnapshot : dataSnapshot.getChildren()) {
+                            CrowdSource cs = jobSnapshot.getValue(CrowdSource.class);
+                            td.put(jobSnapshot.getKey(), cs);
+                        }
 
+                        sources = new ArrayList<>(td.values());
+                        List<String> keys = new ArrayList<String>(td.keySet());
+                        setupMapMarkers();
                     }
+                }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        //handle databaseError
-                        System.out.printf("error");
-                    }
-                });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    //handle databaseError
+                    System.out.printf("error");
+                }
+            });
+    }
+
+    private void setupMapMarkers() {
+//
+
+        int height = 150;
+        int width = 150;
+        BitmapDrawable bit = null;
+        Bitmap b, smallMarker;
 
         if (!sources.isEmpty()) {
-            for (CrowdSource source : sources) {
-                CrowdSource rf = source;
-//
-                int height = 150;
-                int width = 150;
-
-                BitmapDrawable bit = null;
-                Bitmap b, smallMarker;
-
+            for (CrowdSource rf : sources) {
                 if (rf != null) {
                     switch (rf.getTag()) {
                         case "Cloudy":
@@ -216,16 +236,20 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
                             b = bit.getBitmap();
                             smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
-                            map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon())).title("Cloudy"))
-                                    .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                            map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon()))
+                                .title("Cloudy")
+                                .snippet(rf.getUserID()))
+                                .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
                             break;
                         case "Light Rainfall":
                             bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.rain_low);
                             b = bit.getBitmap();
                             smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
-                            map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon())).title("Light rainfall"))
-                                    .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                            map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon()))
+                                .title("Light rainfall")
+                                .snippet(rf.getUserID()))
+                                .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
 
                             break;
                         case "Medium Rainfall":
@@ -233,24 +257,30 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
                             b = bit.getBitmap();
                             smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
-                            map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon())).title("Medium rainfall"))
-                                    .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                            map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon()))
+                                .title("Medium rainfall")
+                                .snippet(rf.getUserID()))
+                                .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
                             break;
                         case "Heavy Rainfall":
                             bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.rain_high);
                             b = bit.getBitmap();
                             smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
-                            map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon())).title("Heavy rainfall"))
-                                    .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                            map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon()))
+                                .title("Heavy rainfall")
+                                .snippet(rf.getUserID()))
+                                .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
                             break;
                         case "Thunderstorm":
                             bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.thunder);
                             b = bit.getBitmap();
                             smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
-                            map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon())).title("Thunderstorm"))
-                                    .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                            map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon()))
+                                .title("Thunderstorm")
+                                .snippet(rf.getUserID()))
+                                .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
                             break;
                     }
                 } else {
@@ -259,24 +289,40 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
                     b = bit.getBitmap();
                     smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
-                    map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon())).title("No Rating"))
-                            .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-                }
+                    map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon()))
+                        .title("No Rating")
+                        .snippet(rf.getUserID()))
+                        .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+
+                }//endif
             }
-
+            DataWorker dataWorker = new DataWorker();
+            map.setOnMarkerClickListener( s ->{
+                if(s.getSnippet().equals("LACSON WLMS API")){
+                    map.setInfoWindowAdapter(new CustomInfoGraphWindow(getActivity(), dataWorker.getLacsonBridgeAPIData()));
+                }else if(s.getSnippet().equals("MATINA WLMS API")){
+                    map.setInfoWindowAdapter(new CustomInfoGraphWindow(getActivity(), dataWorker.getMatinaBridgeAPIData()));
+                } else if(s.getSnippet().equals("MC ARTHUR WLMS API")) {
+                    map.setInfoWindowAdapter(new CustomInfoGraphWindow(getActivity(), dataWorker.getMacArthurBridgeAPIData()));
+                }else{
+                    map.setInfoWindowAdapter(new CustomInfoWindow(getActivity()));
+                }
+                return false;
+            });
         }
-
     }
+
+
 
 
     private void drawBounds(int stroke, int fill) {
         PolygonOptions polygonOptions = new PolygonOptions()
-                .add(new LatLng(7.085500, 125.614343))
-                .add(new LatLng(7.084122, 125.615475))
-                .add(new LatLng(7.086071, 125.617847))
-                .add(new LatLng(7.087436, 125.616721))
-                .strokeColor(stroke)
-                .fillColor(fill);
+            .add(new LatLng(7.085500, 125.614343))
+            .add(new LatLng(7.084122, 125.615475))
+            .add(new LatLng(7.086071, 125.617847))
+            .add(new LatLng(7.087436, 125.616721))
+            .strokeColor(stroke)
+            .fillColor(fill);
 
         map.addPolygon(polygonOptions);
     }
@@ -284,13 +330,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        map.setMinZoomPreference(15);
+        map.setMinZoomPreference(10);
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         UiSettings settings = map.getUiSettings();
         settings.setZoomControlsEnabled(true);
 
-//        drawBounds (finalBounds, 0x1F00FF00);
         drawBounds(Color.BLUE, 0x1F00FF00);
 
         //Changes...
@@ -302,8 +347,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
             map.moveCamera(CameraUpdateFactory.newLatLng(engineering));
         }
 
-        map.addMarker(new MarkerOptions().position(new LatLng(locale[0], locale[1]))
-                .title("Last location"));
+        map.addMarker(new MarkerOptions().position(new LatLng(7.235784, 125.455271))
+            .title("LACSON-LAMANAN BRIDGE, DAVAO CITY").snippet("LACSON WLMS API"));
+
+        map.addMarker(new MarkerOptions().position(new LatLng(7.085774, 125.557903))
+            .title("MATINA PANGI BRIDGE, DAVAO CITY").snippet("MATINA WLMS API"));
+
+        map.addMarker(new MarkerOptions().position(new LatLng(7.00282, 125.48485))
+            .title("MC ARTHUR BRIDGE, DAVAO CITY").snippet("MC ARTHUR WLMS API"));
+
     }
 
     public interface OnFragmentInteractionListener {
@@ -312,108 +364,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
 
     }
 
-    private void collectCrowdsource(Map<String, Object> users) {
-        //iterate through each user, ignoring their UID
-        for (Map.Entry<String, Object> entry : users.entrySet()) {
-            //Get user map
-            Map singleUser = (Map) entry.getValue();
-            //Get phone field and append to list
-            CrowdSource cs = new CrowdSource();
-
-
-            Collection values = singleUser.values();
-            int i = 1;
-            for (Object value : values) {
-                switch (i++) {
-                    case 1:
-                        cs.setCrowdsource(Integer.parseInt(String.valueOf(value)));
-                        break;
-                    case 2:
-                        cs.setLon(Float.parseFloat(String.valueOf(value)));
-                        break;
-                    case 3:
-                        cs.setTag(String.valueOf(value));
-                        break;
-                    case 4:
-                        cs.setUserID(String.valueOf(value));
-                        break;
-                    case 5:
-                        cs.setDateAdded(String.valueOf(value));
-                        break;
-                    case 6:
-                        cs.setLat(Float.parseFloat(String.valueOf(value)));
-                        break;
-                }
-            }
-
-            int height = 150;
-            int width = 150;
-
-            BitmapDrawable bit = null;
-            Bitmap b, smallMarker;
-
-            if (cs != null) {
-                switch (cs.getTag()) {
-                    case "Cloudy":
-                        bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.cloudy);
-                        b = bit.getBitmap();
-                        smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-
-                        map.addMarker(new MarkerOptions().position(new LatLng(cs.getLat(), cs.getLon())).title("Cloudy").snippet(cs.getUserID()))
-                                .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-                        break;
-                    case "Light Rainfall":
-                        bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.rain_low);
-                        b = bit.getBitmap();
-                        smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-
-                        map.addMarker(new MarkerOptions().position(new LatLng(cs.getLat(), cs.getLon())).title("Light rainfall").snippet(cs.getUserID()))
-                                .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-
-                        break;
-                    case "Medium Rainfall":
-                        bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.rain_medium);
-                        b = bit.getBitmap();
-                        smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-
-                        map.addMarker(new MarkerOptions().position(new LatLng(cs.getLat(), cs.getLon())).title("Medium rainfall").snippet(cs.getUserID()))
-                                .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-                        break;
-                    case "Heavy Rainfall":
-                        bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.rain_high);
-                        b = bit.getBitmap();
-                        smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-
-                        map.addMarker(new MarkerOptions().position(new LatLng(cs.getLat(), cs.getLon())).title("Heavy rainfall").snippet(cs.getUserID()))
-                                .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-                        break;
-                    case "Thunderstorm":
-                        bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.thunder);
-                        b = bit.getBitmap();
-                        smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-
-                        map.addMarker(new MarkerOptions().position(new LatLng(cs.getLat(), cs.getLon())).title("Thunderstorm").snippet(cs.getUserID()))
-                                .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-                        break;
-                }
-            } else {
-
-                bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.unknown_cloud);
-                b = bit.getBitmap();
-                smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-
-                map.addMarker(new MarkerOptions().position(new LatLng(cs.getLat(), cs.getLon())).title("No Rating").snippet(cs.getUserID()))
-                        .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-            }
-            map.setInfoWindowAdapter(new CustomInfoWindow(getActivity()));
-            map.setOnInfoWindowClickListener(this);
-        }
-    }
 
     @Override
     public void onInfoWindowClick(Marker marker) {
         Toast.makeText(getActivity(), "Info window clicked",
-                Toast.LENGTH_SHORT).show();
+            Toast.LENGTH_SHORT).show();
     }
 }
 

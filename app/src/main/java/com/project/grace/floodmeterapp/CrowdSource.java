@@ -6,7 +6,18 @@ import java.io.Serializable;
 
 public class CrowdSource{
 
-    int crowdsource;
+    private int crowdsource;
+    private String userID;
+    private String tag;
+    private String dateAdded;
+    private double lat;
+    private double lon;
+
+    public CrowdSource(){}
+
+    public CrowdSource(int crowdsource) {
+        this.crowdsource = crowdsource;
+    }
 
     public String getUserID() {
         return userID;
@@ -14,21 +25,6 @@ public class CrowdSource{
 
     public void setUserID(String userID) {
         this.userID = userID;
-    }
-
-    String userID;
-    String tag;
-    String dateAdded;
-    double lat;
-    double lon;
-    byte[] image;
-
-    public CrowdSource(){
-
-    }
-
-    public CrowdSource(int crowdsource) {
-        this.crowdsource = crowdsource;
     }
 
     public int getCrowdsource() {
@@ -55,8 +51,7 @@ public class CrowdSource{
         this.dateAdded = dateAdded;
     }
 
-    public double getLat() { return lat;
-    }
+    public double getLat() { return lat;}
 
     public void setLat(double lat) {
         this.lat = lat;
@@ -70,7 +65,12 @@ public class CrowdSource{
         this.lon = lon;
     }
 
-    public void setImage(byte[] image){ this.image = image; }
 
-    public byte[] getImage(){return this.image;}
+    public String toString(){
+        return "User ID: " + this.getUserID()
+            + "\nLat: " + this.getLat()
+            + "\nLon: " + this.getLon()
+            + "\nDate: " + this.getDateAdded()
+            + "\nTag: " + this.getTag();
+    }
 }

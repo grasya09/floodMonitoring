@@ -51,13 +51,14 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
         String thisDate = df.format(todayDate);
 
         String title = marker.getTitle();
-        TextView tvTitle = (TextView) view.findViewById(R.id.marker_title);
+        TextView tvTitle = view.findViewById(R.id.marker_title);
 
         if (!title.equals(""))
             tvTitle.setText(title);
 
         String snippet = marker.getSnippet();
-        TextView tvSnippest = (TextView) view.findViewById(R.id.maker_snippest);
+        TextView tvSnippest = view.findViewById(R.id.maker_snippet);
+
         if (!snippet.equals(""))
             tvSnippest.setText(snippet);
 
@@ -71,12 +72,9 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
             ref.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
                 my_image = BitmapFactory.decodeFile(localFile.getAbsolutePath());
                 imageView.setImageBitmap(my_image);
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
-                    imageView.setImageResource(R.drawable.camera);
-                }
+            }).addOnFailureListener(e -> {
+                Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+                imageView.setImageResource(R.drawable.camera);
             });
         } catch (IOException e) {
             e.printStackTrace();
