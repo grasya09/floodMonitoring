@@ -43,10 +43,12 @@ public class CustomInfoGraphWindow implements GoogleMap.InfoWindowAdapter {
     private Bitmap my_image;
     private static LineData lineData;
     private ArrayList<Entry> jsonMap;
+    private ArrayList<Entry> rainfall;
 
-    public CustomInfoGraphWindow(Context context, ArrayList<Entry> entry) {
+    public CustomInfoGraphWindow(Context context, ArrayList<Entry> entry, ArrayList<Entry> rainfall) {
         this.mContext = context;
         this.jsonMap = entry;
+        this.rainfall = rainfall;
         mWindow = LayoutInflater.from(context).inflate(R.layout.custom_graph_info_window, null);
     }
 
@@ -58,6 +60,8 @@ public class CustomInfoGraphWindow implements GoogleMap.InfoWindowAdapter {
             lineChart.setNoDataText("Tap to refresh.");
 
             LineDataSet set1 = new LineDataSet(jsonMap, "Water Level");
+            LineDataSet set2 = new LineDataSet(rainfall, "Rainfall Amount");
+
             set1.setFillAlpha(110);
             set1.setLineWidth(2.5f);
             set1.setColor(Color.rgb(66, 103, 178));
@@ -71,18 +75,15 @@ public class CustomInfoGraphWindow implements GoogleMap.InfoWindowAdapter {
             set1.setLineWidth(2f);
             set1.setAxisDependency(YAxis.AxisDependency.LEFT);
 
-            lineData = new LineData();
-            lineData.addDataSet(set1);
 
             ArrayList<ILineDataSet> dataSets = new ArrayList<>();
             dataSets.add(set1);
+            dataSets.add(set2);
             lineData = new LineData(dataSets);
             lineChart.getAxisLeft().setTextColor(Color.rgb(247, 77, 24));
             lineChart.getXAxis().setTextColor(Color.rgb(247, 77, 24));
             lineChart.getLegend().setTextColor(Color.rgb(247, 77, 24));
 
-
-            lineChart.setData(lineData);
             lineChart.setData(lineData);
         }
     }

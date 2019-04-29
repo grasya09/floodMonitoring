@@ -28,39 +28,67 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class DataWorker {
 
     private static InputStream iStream;
     private static BufferedReader reader;
 
-    private final String strUrlMcArthur = "http://philsensors.asti.dost.gov.ph/php/24hrs.php?stationid=1907";
-    private final String strUrlLacsonBirdge = "http://philsensors.asti.dost.gov.ph/php/24hrs.php?stationid=1446";
+    private final String strUrlWaanBridge = "http://philsensors.asti.dost.gov.ph/php/24hrs.php?stationid=1177";
+    private final String strUrlMintalBirdge = "http://philsensors.asti.dost.gov.ph/php/24hrs.php?stationid=1195";
     private final String strUrlMatinaBridge = "http://philsensors.asti.dost.gov.ph/php/24hrs.php?stationid=954&fbclid=IwAR3uykazMjdYDWTvFFjADihonicb6hh57Fb1CHCfhbXTNjQ45WCbLjGNYoo";
     private URL url = null;
     private String data = "";
     private StringBuffer sb = new StringBuffer();
     private HttpURLConnection connection;
+    private WaterLevelMonitoring viewData;
+    private ProgressDialog progressDialog;
 
-    private ArrayList<Entry> wlmsDataMcArthur = new ArrayList<>();
-    private ArrayList<Entry> wlmsDataLacson = new ArrayList<>();
+    private ArrayList<Entry> wlmsDataWaan = new ArrayList<>();
+    private ArrayList<Entry> wlmsDataMintal = new ArrayList<>();
     private ArrayList<Entry> wlmsDataMatina = new ArrayList<>();
+    private ArrayList<Entry> rainfallDataWaan = new ArrayList<>();
+    private ArrayList<Entry> rainfallDataMintal = new ArrayList<>();
+    private ArrayList<Entry> rainfallDataMatina = new ArrayList<>();
 
-    public DataWorker() {
-        WaterLevelMonitoring viewData = new WaterLevelMonitoring();
+    public DataWorker() throws ExecutionException, InterruptedException {
+        viewData = new WaterLevelMonitoring();
+        viewData.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+    }
+
+    public DataWorker(ProgressDialog progressDialog) {
+        this.progressDialog = progressDialog;
+        viewData = new WaterLevelMonitoring();
         viewData.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public ArrayList<Entry> getMacArthurBridgeAPIData(){
-        return wlmsDataMcArthur;
+    public ArrayList<Entry> getWaanBridgeAPIData() {
+        return wlmsDataWaan;
     }
 
-    public ArrayList<Entry> getLacsonBridgeAPIData(){
-        return wlmsDataLacson;
+    public ArrayList<Entry> getMintalBridgeAPIData() {
+        return wlmsDataMintal;
     }
 
-    public ArrayList<Entry> getMatinaBridgeAPIData(){
+    public ArrayList<Entry> getMatinaBridgeAPIData() {
         return wlmsDataMatina;
+    }
+
+    public ArrayList<Entry> getWaanRainfallAPIData() {
+        return rainfallDataWaan;
+    }
+
+    public ArrayList<Entry> getMintalRainfallAPIData() {
+        return rainfallDataMintal;
+    }
+
+    public ArrayList<Entry> getMatinaRainfallAPIData() {
+        return rainfallDataMatina;
+    }
+
+    public AsyncTask.Status getStatus() {
+        return viewData.getStatus();
     }
 
 
@@ -75,7 +103,7 @@ public class DataWorker {
 
 
                 //Lacson Bridge
-                url = new URL(strUrlLacsonBirdge);
+                url = new URL(strUrlMintalBirdge);
                 connection = (HttpURLConnection) url.openConnection();
                 iStream = connection.getInputStream();
                 reader = new BufferedReader(new InputStreamReader(iStream));
@@ -94,10 +122,10 @@ public class DataWorker {
                     int pos = 0;
                     for (int i = jsonArray.length() - 1; i >= 0; i--) {
                         JSONObject jObject = jsonArray.getJSONObject(i);
-                        String dateRecord = jObject.getString("Datetime Read");
                         float waterLevel = Float.parseFloat(jObject.getString("Waterlevel"));
-                        Timestamp time = Timestamp.valueOf(jObject.getString("Datetime Read"));
-                        wlmsDataLacson.add(new Entry((float) (pos + 2), waterLevel));
+                        float rainFallAmount = Float.parseFloat(jObject.getString("Rainfall Amount"));
+                        wlmsDataMintal.add(new Entry((float) (pos + 2), waterLevel));
+                        rainfallDataMintal.add(new Entry((float) (pos + 2), rainFallAmount));
                         pos++;
                         // here you put ean as key and nr as value
                     }
@@ -106,7 +134,7 @@ public class DataWorker {
 
 
                 //Mc Arthur Birdge
-                url = new URL(strUrlMcArthur);
+                url = new URL(strUrlWaanBridge);
                 connection = (HttpURLConnection) url.openConnection();
                 iStream = connection.getInputStream();
                 reader = new BufferedReader(new InputStreamReader(iStream));
@@ -129,8 +157,10 @@ public class DataWorker {
                         JSONObject jObject = jsonArray.getJSONObject(i);
                         String dateRecord = jObject.getString("Datetime Read");
                         float waterLevel = Float.parseFloat(jObject.getString("Waterlevel"));
+                        float rainFallAmount = Float.parseFloat(jObject.getString("Rainfall Amount"));
                         Timestamp time = Timestamp.valueOf(jObject.getString("Datetime Read"));
-                        wlmsDataMcArthur.add(new Entry((float) (pos + 2), waterLevel));
+                        wlmsDataWaan.add(new Entry((float) (pos + 2), waterLevel));
+                        rainfallDataWaan.add(new Entry((float) (pos + 2), rainFallAmount));
                         pos++;
                         // here you put ean as key and nr as value
                     }
@@ -158,10 +188,12 @@ public class DataWorker {
                     int pos = 0;
                     for (int i = jsonArray.length() - 1; i >= 0; i--) {
                         JSONObject jObject = jsonArray.getJSONObject(i);
-                        String dateRecord = jObject.getString("Datetime Read");
                         float waterLevel = Float.parseFloat(jObject.getString("Waterlevel"));
-                        Timestamp time = Timestamp.valueOf(jObject.getString("Datetime Read"));
+
+                        float rainFallAmount = Float.parseFloat(jObject.getString("Rainfall Amount"));
+
                         wlmsDataMatina.add(new Entry((float) (pos + 2), waterLevel));
+                        rainfallDataMatina.add(new Entry((float) (pos + 2), rainFallAmount));
                         pos++;
                         // here you put ean as key and nr as value
                     }
@@ -185,7 +217,17 @@ public class DataWorker {
                 }
                 connection.disconnect();
             }
+
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if (progressDialog != null)
+                progressDialog.dismiss();
+
+            super.onPostExecute(aVoid);
+        }
     }
+
 }

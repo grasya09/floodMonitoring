@@ -2,6 +2,7 @@ package com.project.grace.floodmeterapp;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -194,24 +195,24 @@ public class RateActivity extends AppCompatActivity {
                 mStorageRef = FirebaseStorage.getInstance().getReference("crowdsource").child(thisDate);
 
                 Bitmap bitmap = ((BitmapDrawable) imageView2.getDrawable()).getBitmap();
+
+
+
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 50, baos);
                 byte[] data = baos.toByteArray();
 
+//                Bitmap b = BitmapFactory.decodeByteArray(data, 0, data.length);
+//                profileImage.setImageBitmap(Bitmap.createScaledBitmap(b, 120, 120, false));
+
                 UploadTask uploadTask = mStorageRef.child(user.getUid()).putBytes(data);
-                uploadTask.addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle unsuccessful uploads
-                        System.out.println("failed");
-                    }
-                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                        // ...
-                        System.out.println("SUccess");
-                    }
+                uploadTask.addOnFailureListener(exception -> {
+                    // Handle unsuccessful uploads
+                    System.out.println("failed");
+                }).addOnSuccessListener(taskSnapshot -> {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                    // ...
+                    System.out.println("SUccess");
                 });
 
                 Intent intent = new Intent(RateActivity.this, MainActivity.class);
