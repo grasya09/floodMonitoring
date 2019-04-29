@@ -183,7 +183,7 @@ public class StatisticsFragment extends Fragment implements View.OnClickListener
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     rf = snapshot.getValue(CrowdSource.class);
 
-                    if (isInsideLocation((float) rf.lat, (float) rf.lon)) {
+                    if (isInsideLocation((float) rf.getLat(), (float) rf.getLon())) {
                         switch (rf.getTag()) {
                             case "Cloudy":
                                 cloudy++;

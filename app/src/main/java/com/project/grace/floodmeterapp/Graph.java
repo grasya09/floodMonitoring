@@ -94,17 +94,6 @@ public class Graph extends Fragment {
         lineChart.setNoDataText("Tap to refresh.");
     }
 
-    private void setupAxes() {
-
-    }
-
-    public void setupData() {
-
-    }
-
-    public void setupLegend() {
-
-    }
 
 
     @Override
