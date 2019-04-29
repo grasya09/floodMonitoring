@@ -59,6 +59,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 //import com.google.firebase.database.DataSnapshot;
 
@@ -207,7 +208,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
 
                         sources = new ArrayList<>(td.values());
                         List<String> keys = new ArrayList<String>(td.keySet());
-                        setupMapMarkers();
+                        try {
+                            setupMapMarkers();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 
@@ -219,7 +226,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
             });
     }
 
-    private void setupMapMarkers() {
+    private void setupMapMarkers() throws ExecutionException, InterruptedException {
 //
 
         int height = 150;
@@ -298,12 +305,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
             }
             DataWorker dataWorker = new DataWorker();
             map.setOnMarkerClickListener( s ->{
-                if(s.getSnippet().equals("LACSON WLMS API")){
-                    map.setInfoWindowAdapter(new CustomInfoGraphWindow(getActivity(), dataWorker.getLacsonBridgeAPIData()));
+                if(s.getSnippet().equals("MINTAL WLMS & ARG API")){
+                    map.setInfoWindowAdapter(new CustomInfoGraphWindow(getActivity(), dataWorker.getMintalBridgeAPIData(), dataWorker.getMintalRainfallAPIData()));
                 }else if(s.getSnippet().equals("MATINA WLMS API")){
-                    map.setInfoWindowAdapter(new CustomInfoGraphWindow(getActivity(), dataWorker.getMatinaBridgeAPIData()));
-                } else if(s.getSnippet().equals("MC ARTHUR WLMS API")) {
-                    map.setInfoWindowAdapter(new CustomInfoGraphWindow(getActivity(), dataWorker.getMacArthurBridgeAPIData()));
+                    map.setInfoWindowAdapter(new CustomInfoGraphWindow(getActivity(), dataWorker.getMatinaBridgeAPIData(), dataWorker.getMatinaRainfallAPIData()));
+                } else if(s.getSnippet().equals("WAAN WLMS & ARG API")) {
+                    map.setInfoWindowAdapter(new CustomInfoGraphWindow(getActivity(), dataWorker.getWaanBridgeAPIData(), dataWorker.getWaanRainfallAPIData()));
                 }else{
                     map.setInfoWindowAdapter(new CustomInfoWindow(getActivity()));
                 }
@@ -347,14 +354,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
             map.moveCamera(CameraUpdateFactory.newLatLng(engineering));
         }
 
-        map.addMarker(new MarkerOptions().position(new LatLng(7.235784, 125.455271))
-            .title("LACSON-LAMANAN BRIDGE, DAVAO CITY").snippet("LACSON WLMS API"));
+        map.addMarker(new MarkerOptions().position(new LatLng(7.094917, 125.501694))
+            .title("MINTAL BRIDGE, DAVAO CITY").snippet("MINTAL WLMS & ARG API"));
 
         map.addMarker(new MarkerOptions().position(new LatLng(7.085774, 125.557903))
             .title("MATINA PANGI BRIDGE, DAVAO CITY").snippet("MATINA WLMS API"));
 
-        map.addMarker(new MarkerOptions().position(new LatLng(7.00282, 125.48485))
-            .title("MC ARTHUR BRIDGE, DAVAO CITY").snippet("MC ARTHUR WLMS API"));
+        map.addMarker(new MarkerOptions().position(new LatLng(7.131886, 125.582833))
+            .title("WAAN BRIDGE, DAVAO CITY").snippet("WAAN WLMS & ARG API"));
 
     }
 

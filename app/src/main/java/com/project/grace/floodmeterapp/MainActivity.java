@@ -1,6 +1,7 @@
 package com.project.grace.floodmeterapp;
 
 import android.Manifest;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -85,6 +87,7 @@ public class MainActivity extends AppCompatActivity
 
 
     }
+
 
     private void init() {
         Toolbar toolbar = findViewById(R.id.toolbar);

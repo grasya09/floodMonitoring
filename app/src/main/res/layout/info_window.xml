@@ -37,6 +37,7 @@
            android:ellipsize="end"
            android:maxLines="10"
            android:textColor="#ffffff"
-           android:textSize="14sp"/>
+           android:textSize="14sp"
+           android:visibility="gone"/>
    </LinearLayout>
 </LinearLayout>
