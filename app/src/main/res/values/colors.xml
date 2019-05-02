@@ -14,5 +14,7 @@
     <color name="color4">#8149A9</color>
     <color name="color5">#2E97CE</color>
     <color name="color6">#3CB050</color>
+    <color name="color7">#FFF</color>
+    <color name="level_color">#79FD303A</color>
 
 </resources>
