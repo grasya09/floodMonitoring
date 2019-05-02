@@ -222,8 +222,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
     private void setupMapMarkers() {
 //
 
-        int height = 150;
-        int width = 150;
+        int height = 52;
+        int width = 52;
         BitmapDrawable bit = null;
         Bitmap b, smallMarker;
 
