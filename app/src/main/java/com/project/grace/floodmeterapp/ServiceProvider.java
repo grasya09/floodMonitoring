@@ -1,76 +1,53 @@
 package com.project.grace.floodmeterapp;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.ProgressDialog;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.project.grace.floodmeterapp.PhilSensorData.DataWorker;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.concurrent.ExecutionException;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-
+import static com.project.grace.floodmeterapp.Constant.CHANNEL_ID;
 import static com.project.grace.floodmeterapp.Constant.LEVEL_1;
 import static com.project.grace.floodmeterapp.Constant.LEVEL_2;
 import static com.project.grace.floodmeterapp.Constant.LEVEL_3;
 import static com.project.grace.floodmeterapp.Constant.LEVEL_4;
 import static com.project.grace.floodmeterapp.Constant.LEVEL_5;
-import static com.project.grace.floodmeterapp.Constant.NOTIF_TITLE;
 
 public class ServiceProvider extends Service {
 
     private static final String TAG = "ServiceProvider";
-    private boolean isRunning = false;
-    private Timestamp time;
-    float lastReading = 0.0f;
-    private static BufferedReader reader;
-
-    private final String strUrl = "http://philsensors.asti.dost.gov.ph/php/24hrs.php?stationid=954&fbclid=IwAR3uykazMjdYDWTvFFjADihonicb6hh57Fb1CHCfhbXTNjQ45WCbLjGNYoo";
-    private URL url = null;
-    private String data = "";
-    private StringBuffer sb = new StringBuffer();
-    double result = 0;
-    HttpURLConnection connection;
+    private DataWorker dataWorker;
+    private double[] testCases = new double[3];
+    private double[] waterLevelTests = new double[3];
+    private double[] rainFallTests = new double[3];
+    private double[] xy = new double[3];
+    private double[] getRainFallTestsSquared = new double[3];
+    private NotificationManager notifManager;
 
 
     @Override
     public void onCreate() {
         Log.i(TAG, "Service onCreate");
-        isRunning = true;
+        NotificationDataManager ndm = new NotificationDataManager();
+        ndm.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "Service onStartCommand");
-
-        WaterLevelMonitoring monitoring = new WaterLevelMonitoring();
-        monitoring.execute();
 
         //Creating new thread for my service
         //Always write your long running tasks in a separate thread, to avoid ANR
@@ -78,17 +55,66 @@ public class ServiceProvider extends Service {
 
     }
 
-    public void sendNotification(String title, String message) {
+    private void setupNotification(double y) {
+        if (y > 8.5) {
+            sendNotification("Flood Monitoring", LEVEL_1);
+        } else if (y >= 6.5 && y <= 8.5) {
+            sendNotification("Flood Monitoring", LEVEL_3);
+        } else if (y < 6.5) {
+            sendNotification("Flood Monitoring", LEVEL_4);
+        }
+    }
 
+    public void sendNotification(String title2, String aMessage) {
         //Get an instance of NotificationManager//
-
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(getApplicationContext())
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle(title)
-                        .setContentText(message);
-        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(001, mBuilder.build());
+        final int NOTIFY_ID = 0; // ID of notification
+        String id = CHANNEL_ID; // default_channel_id
+        String title = title2; // Default Channel
+        Intent intent;
+        PendingIntent pendingIntent;
+        NotificationCompat.Builder builder;
+        if (notifManager == null) {
+            notifManager = (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = notifManager.getNotificationChannel(id);
+            if (mChannel == null) {
+                mChannel = new NotificationChannel(id, title, importance);
+                mChannel.enableVibration(true);
+                mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                notifManager.createNotificationChannel(mChannel);
+            }
+            builder = new NotificationCompat.Builder(this, id);
+            intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+            builder.setContentTitle(aMessage)                            // required
+                .setSmallIcon(R.mipmap.ic_launcher)   // required
+                .setContentText(this.getString(R.string.app_name)) // required
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .setTicker(aMessage)
+                .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+        }
+        else {
+            builder = new NotificationCompat.Builder(this, id);
+            intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+            builder.setContentTitle(aMessage)                            // required
+                .setSmallIcon(android.R.drawable.ic_popup_reminder)   // required
+                .setContentText(this.getString(R.string.app_name)) // required
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .setTicker(aMessage)
+                .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})
+                .setPriority(Notification.PRIORITY_HIGH);
+        }
+        Notification notification = builder.build();
+        notifManager.notify(NOTIFY_ID, notification);
     }
 
 
@@ -100,68 +126,78 @@ public class ServiceProvider extends Service {
 
     @Override
     public void onDestroy() {
-        isRunning = false;
         Log.i(TAG, "Service onDestroy");
     }
 
-
-    class WaterLevelMonitoring extends AsyncTask<Void, Void, Void> {
-
-        ProgressDialog progressDialog;
-
+    class NotificationDataManager extends AsyncTask<Void, Void, Void> {
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         protected Void doInBackground(Void... voids) {
             //            <editor-fold desc="Thrad for rainfall API">
-            String line = "";
-            while (true) {
-                try {
-                    url = new URL(strUrl);
-                    connection = (HttpURLConnection) url.openConnection();
-                    InputStream iStream = connection.getInputStream();
+            try {
 
-                    reader = new BufferedReader(new InputStreamReader(iStream));
-                    line = reader.readLine();
-                    JSONObject jsonObject = new JSONObject(line);
-                    jsonObject.toString();
+                while (true) {
 
-                    JSONArray jsonArray = jsonObject.getJSONArray("Data");
-                    //For Values
+                    dataWorker = new DataWorker();
 
-                    ArrayList<Entry> jsonMap = new ArrayList<>();
-
-                    JSONObject jObject = jsonArray.getJSONObject(0);
-                    String dateRecord = jObject.getString("Datetime Read");
-
-                    if (lastReading < Float.parseFloat(jObject.getString("Waterlevel"))) {
-                        if (Float.parseFloat(jObject.getString("Waterlevel")) <= 1) {
-                            sendNotification(NOTIF_TITLE, LEVEL_5);
-                        } else if (Float.parseFloat(jObject.getString("Waterlevel")) <= 2) {
-                            sendNotification(NOTIF_TITLE, LEVEL_4);
-                        } else if (Float.parseFloat(jObject.getString("Waterlevel")) <= 3) {
-                            sendNotification(NOTIF_TITLE, LEVEL_3);
-                        } else if (Float.parseFloat(jObject.getString("Waterlevel")) <= 4) {
-                            sendNotification(NOTIF_TITLE, LEVEL_2);
-                        } else {
-                            sendNotification(NOTIF_TITLE, LEVEL_1);
-                        }
-                    } else if (lastReading > Float.parseFloat(jObject.getString("Waterlevel")))
-                        sendNotification("Water Level Monitoring", "The water level is decreasing!");
-                    else {
-                        sendNotification("Water Level Monitoring", "The water level is steady!");
+                    waterLevelTests[0] = 0.0;
+                    for (Entry entry : dataWorker.getMatinaBridgeAPIData()) {
+                        waterLevelTests[0] += (double) entry.getY();
                     }
+                    waterLevelTests[1] = 0.0;
+                    for (Entry entry : dataWorker.getMintalBridgeAPIData()) {
+                        waterLevelTests[1] += (double) entry.getY();
+                    }
+                    waterLevelTests[2] = 0.0;
+                    for (Entry entry : dataWorker.getWaanBridgeAPIData()) {
+                        waterLevelTests[2] += (double) entry.getY();
+                    }
+                    rainFallTests[0] = 0.0;
+                    for (Entry entry : dataWorker.getMatinaBridgeAPIData()) {
+                        rainFallTests[0] += (double) entry.getY();
+                    }
+                    rainFallTests[1] = 0.0;
+                    for (Entry entry : dataWorker.getMintalBridgeAPIData()) {
+                        rainFallTests[1] += (double) entry.getY();
+                    }
+                    rainFallTests[2] = 0.0;
+                    for (Entry entry : dataWorker.getWaanBridgeAPIData()) {
+                        rainFallTests[2] += (double) entry.getY();
+                    }
+                    xy[0] = waterLevelTests[0] * rainFallTests[0];
+                    xy[1] = waterLevelTests[1] * rainFallTests[1];
+                    xy[1] = waterLevelTests[2] * rainFallTests[2];
+                    getRainFallTestsSquared[0] = Math.pow(waterLevelTests[0], 2);
+                    getRainFallTestsSquared[1] = Math.pow(waterLevelTests[1], 2);
+                    getRainFallTestsSquared[2] = Math.pow(waterLevelTests[2], 2);
+                    double xMin = 0.0d;
+                    for (double d : rainFallTests)
+                        xMin += d;
+                    double yMin = 0.0d;
+                    for (double d : waterLevelTests)
+                        yMin += d;
+                    xMin = xMin / 3.0d;
+                    yMin = yMin / 3.0d;
+                    double temp1 = 0.0;
+                    for (double d : xy)
+                        temp1 += d;
+                    double temp2 = 0.0;
+                    for (double d : xy)
+                        temp2 += d;
+                    double b = temp1 / temp2;
+                    double a = yMin - (b * xMin);
+                    double y = (a * xMin) + b;
+                    setupNotification(y);
 
-
-                    lastReading = Float.parseFloat(jObject.getString("Waterlevel"));
-                    // here you put ean as key and nr as value
-                    Thread.sleep(240000);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return null;
-
+                    Thread.sleep(1000000);
                 }
+
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            return null;
         }
 
         @Override

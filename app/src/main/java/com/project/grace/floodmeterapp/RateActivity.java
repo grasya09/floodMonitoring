@@ -2,6 +2,7 @@ package com.project.grace.floodmeterapp;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -193,31 +194,36 @@ public class RateActivity extends AppCompatActivity {
 
                 mStorageRef = FirebaseStorage.getInstance().getReference("crowdsource").child(thisDate);
 
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
                 Bitmap bitmap = ((BitmapDrawable) imageView2.getDrawable()).getBitmap();
+
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 50, baos);
                 byte[] data = baos.toByteArray();
 
+                Bitmap b = BitmapFactory.decodeByteArray(data, 0, data.length);
+                imageView2.setImageBitmap(Bitmap.createScaledBitmap(b, 120, 120, false));
+
+                baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 50, baos);
+                data = baos.toByteArray();
+
                 UploadTask uploadTask = mStorageRef.child(user.getUid()).putBytes(data);
-                uploadTask.addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle unsuccessful uploads
-                        System.out.println("failed");
-                    }
-                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                        // ...
-                        System.out.println("SUccess");
-                    }
+                uploadTask.addOnFailureListener(exception -> {
+                    // Handle unsuccessful uploads
+                    System.out.println("failed");
+                }).addOnSuccessListener(taskSnapshot -> {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                    // ...
+                    System.out.println("SUccess");
                 });
 
                 Intent intent = new Intent(RateActivity.this, MainActivity.class);
-                Bundle b = new Bundle();
-                b.putDoubleArray("locale", new double[]{positionX, positionY}); //Your id
-                intent.putExtras(b); //Put your id to your next Intent
+                Bundle bun = new Bundle();
+                bun.putDoubleArray("locale", new double[]{positionX, positionY}); //Your id
+                intent.putExtras(bun); //Put your id to your next Intent
                 startActivity(intent);
                 finish();
 

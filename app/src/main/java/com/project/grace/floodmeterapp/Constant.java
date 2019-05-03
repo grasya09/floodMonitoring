@@ -17,6 +17,7 @@ public class Constant {
     public static final String LEVEL_3 = "The water leve is in average";
     public static String LEVEL_4 = "The water level is good";
     public static String LEVEL_5 = "The water level is at least";
+    public static String CHANNEL_ID = "418-FLOOD";
 
 
 }
