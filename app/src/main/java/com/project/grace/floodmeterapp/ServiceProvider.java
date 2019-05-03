@@ -192,6 +192,15 @@ public class ServiceProvider extends Service {
                     Thread.sleep(1000000);
                 }
 
+                /*
+                * This equation will solve the range (Low, Average, High)
+                * k = 1+3.322(LogN)
+                * R = UL - LL
+                * i = R/k
+                *
+                *
+                * */
+
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {

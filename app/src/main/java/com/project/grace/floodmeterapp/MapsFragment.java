@@ -238,13 +238,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
             for (CrowdSource rf : sources) {
                 if (rf != null) {
                     switch (rf.getTag()) {
-                        case "Cloudy":
+                        case "No Rain":
                             bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.cloudy);
                             b = bit.getBitmap();
                             smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
                             map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon()))
-                                .title("Cloudy")
+                                .title("No Rain")
                                 .snippet(rf.getUserID()))
                                 .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
                             break;
@@ -259,13 +259,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
                                 .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
 
                             break;
-                        case "Medium Rainfall":
+                        case "Moderate Rainfall":
                             bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.rain_medium);
                             b = bit.getBitmap();
                             smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
                             map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon()))
-                                .title("Medium rainfall")
+                                .title("Moderate rainfall")
                                 .snippet(rf.getUserID()))
                                 .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
                             break;
@@ -279,7 +279,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
                                 .snippet(rf.getUserID()))
                                 .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
                             break;
-                        case "Thunderstorm":
+                       /* case "Thunderstorm":
                             bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.thunder);
                             b = bit.getBitmap();
                             smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
@@ -288,7 +288,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
                                 .title("Thunderstorm")
                                 .snippet(rf.getUserID()))
                                 .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-                            break;
+                            break;*/
                     }
                 } else {
 
