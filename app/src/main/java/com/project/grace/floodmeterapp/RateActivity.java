@@ -194,16 +194,21 @@ public class RateActivity extends AppCompatActivity {
 
                 mStorageRef = FirebaseStorage.getInstance().getReference("crowdsource").child(thisDate);
 
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
                 Bitmap bitmap = ((BitmapDrawable) imageView2.getDrawable()).getBitmap();
-
-
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 50, baos);
                 byte[] data = baos.toByteArray();
 
-//                Bitmap b = BitmapFactory.decodeByteArray(data, 0, data.length);
-//                profileImage.setImageBitmap(Bitmap.createScaledBitmap(b, 120, 120, false));
+                Bitmap b = BitmapFactory.decodeByteArray(data, 0, data.length);
+                imageView2.setImageBitmap(Bitmap.createScaledBitmap(b, 120, 120, false));
+
+                baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 50, baos);
+                data = baos.toByteArray();
 
                 UploadTask uploadTask = mStorageRef.child(user.getUid()).putBytes(data);
                 uploadTask.addOnFailureListener(exception -> {
@@ -216,9 +221,9 @@ public class RateActivity extends AppCompatActivity {
                 });
 
                 Intent intent = new Intent(RateActivity.this, MainActivity.class);
-                Bundle b = new Bundle();
-                b.putDoubleArray("locale", new double[]{positionX, positionY}); //Your id
-                intent.putExtras(b); //Put your id to your next Intent
+                Bundle bun = new Bundle();
+                bun.putDoubleArray("locale", new double[]{positionX, positionY}); //Your id
+                intent.putExtras(bun); //Put your id to your next Intent
                 startActivity(intent);
                 finish();
 

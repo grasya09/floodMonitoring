@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
 public class DataWorker {
@@ -44,6 +45,8 @@ public class DataWorker {
     private HttpURLConnection connection;
     private WaterLevelMonitoring viewData;
     private ProgressDialog progressDialog;
+
+    private String lastReading;
 
     private ArrayList<Entry> wlmsDataWaan = new ArrayList<>();
     private ArrayList<Entry> wlmsDataMintal = new ArrayList<>();
@@ -87,6 +90,9 @@ public class DataWorker {
         return rainfallDataMatina;
     }
 
+    public String getLatestReading(){
+        return this.lastReading;
+    }
     public AsyncTask.Status getStatus() {
         return viewData.getStatus();
     }
@@ -118,12 +124,17 @@ public class DataWorker {
                     jsonObject.toString();
 
                     JSONArray jsonArray = jsonObject.getJSONArray("Data");
+
+                    JSONObject information = jsonObject.getJSONObject("0");
+                    lastReading = information.getString("last_reading");
+
                     //For Values
                     int pos = 0;
-                    for (int i = jsonArray.length() - 1; i >= 0; i--) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jObject = jsonArray.getJSONObject(i);
                         float waterLevel = Float.parseFloat(jObject.getString("Waterlevel"));
                         float rainFallAmount = Float.parseFloat(jObject.getString("Rainfall Amount"));
+
                         wlmsDataMintal.add(new Entry((float) (pos + 2), waterLevel));
                         rainfallDataMintal.add(new Entry((float) (pos + 2), rainFallAmount));
                         pos++;
@@ -153,7 +164,7 @@ public class DataWorker {
                     JSONArray jsonArray = jsonObject.getJSONArray("Data");
                     //For Values
                     int pos = 0;
-                    for (int i = jsonArray.length() - 1; i >= 0; i--) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jObject = jsonArray.getJSONObject(i);
                         String dateRecord = jObject.getString("Datetime Read");
                         float waterLevel = Float.parseFloat(jObject.getString("Waterlevel"));
@@ -186,7 +197,7 @@ public class DataWorker {
                     JSONArray jsonArray = jsonObject.getJSONArray("Data");
                     //For Values
                     int pos = 0;
-                    for (int i = jsonArray.length() - 1; i >= 0; i--) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jObject = jsonArray.getJSONObject(i);
                         float waterLevel = Float.parseFloat(jObject.getString("Waterlevel"));
 
@@ -198,6 +209,7 @@ public class DataWorker {
                         // here you put ean as key and nr as value
                     }
                 }
+
 
 
             } catch (MalformedURLException e) {
@@ -215,6 +227,7 @@ public class DataWorker {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
                 connection.disconnect();
             }
 

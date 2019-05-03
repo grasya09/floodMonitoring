@@ -306,11 +306,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
             DataWorker dataWorker = new DataWorker();
             map.setOnMarkerClickListener( s ->{
                 if(s.getSnippet().equals("MINTAL WLMS & ARG API")){
-                    map.setInfoWindowAdapter(new CustomInfoGraphWindow(getActivity(), dataWorker.getMintalBridgeAPIData(), dataWorker.getMintalRainfallAPIData()));
+                    map.setInfoWindowAdapter(new CustomInfoGraphWindow(getActivity(), dataWorker.getMintalBridgeAPIData(), dataWorker.getMintalRainfallAPIData(),  dataWorker.getLatestReading()));
                 }else if(s.getSnippet().equals("MATINA WLMS API")){
-                    map.setInfoWindowAdapter(new CustomInfoGraphWindow(getActivity(), dataWorker.getMatinaBridgeAPIData(), dataWorker.getMatinaRainfallAPIData()));
+                    map.setInfoWindowAdapter(new CustomInfoGraphWindow(getActivity(), dataWorker.getMatinaBridgeAPIData(), dataWorker.getMatinaRainfallAPIData(), dataWorker.getLatestReading()));
                 } else if(s.getSnippet().equals("WAAN WLMS & ARG API")) {
-                    map.setInfoWindowAdapter(new CustomInfoGraphWindow(getActivity(), dataWorker.getWaanBridgeAPIData(), dataWorker.getWaanRainfallAPIData()));
+                    map.setInfoWindowAdapter(new CustomInfoGraphWindow(getActivity(), dataWorker.getWaanBridgeAPIData(), dataWorker.getWaanRainfallAPIData(),  dataWorker.getLatestReading()));
                 }else{
                     map.setInfoWindowAdapter(new CustomInfoWindow(getActivity()));
                 }

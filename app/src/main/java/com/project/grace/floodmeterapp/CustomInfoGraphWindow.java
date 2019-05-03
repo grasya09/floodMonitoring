@@ -42,51 +42,23 @@ public class CustomInfoGraphWindow implements GoogleMap.InfoWindowAdapter {
     private String thisDate;
     private Bitmap my_image;
     private static LineData lineData;
-    private ArrayList<Entry> jsonMap;
+    private ArrayList<Entry> waterLevel;
     private ArrayList<Entry> rainfall;
 
-    public CustomInfoGraphWindow(Context context, ArrayList<Entry> entry, ArrayList<Entry> rainfall) {
+    private String latestReading;
+
+    private TextView textDate;
+    private TextView textWaterLevel;
+    private TextView textRainfall;
+
+    public CustomInfoGraphWindow(Context context, ArrayList<Entry> entry, ArrayList<Entry> rainfall, String currentDate) {
         this.mContext = context;
-        this.jsonMap = entry;
+        this.waterLevel = entry;
         this.rainfall = rainfall;
+        this.latestReading = currentDate;
         mWindow = LayoutInflater.from(context).inflate(R.layout.custom_graph_info_window, null);
     }
 
-    private void setupChart(View view) {
-
-        if (jsonMap.size() > 0) {
-
-            LineChart lineChart = view.findViewById(R.id.line_chart_graph);
-            lineChart.setNoDataText("Tap to refresh.");
-
-            LineDataSet set1 = new LineDataSet(jsonMap, "Water Level");
-            LineDataSet set2 = new LineDataSet(rainfall, "Rainfall Amount");
-
-            set1.setFillAlpha(110);
-            set1.setLineWidth(2.5f);
-            set1.setColor(Color.rgb(66, 103, 178));
-            set1.setCircleColor(Color.rgb(240, 238, 70));
-            set1.setCircleRadius(2f);
-            set1.setFillColor(Color.rgb(240, 238, 70));
-            set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-            set1.setDrawValues(true);
-            set1.setValueTextSize(5f);
-            set1.setValueTextColor(Color.rgb(240, 238, 70));
-            set1.setLineWidth(2f);
-            set1.setAxisDependency(YAxis.AxisDependency.LEFT);
-
-
-            ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-            dataSets.add(set1);
-            dataSets.add(set2);
-            lineData = new LineData(dataSets);
-            lineChart.getAxisLeft().setTextColor(Color.rgb(247, 77, 24));
-            lineChart.getXAxis().setTextColor(Color.rgb(247, 77, 24));
-            lineChart.getLegend().setTextColor(Color.rgb(247, 77, 24));
-
-            lineChart.setData(lineData);
-        }
-    }
 
     private void renderWindowText(Marker marker, View view) {
 
@@ -106,8 +78,19 @@ public class CustomInfoGraphWindow implements GoogleMap.InfoWindowAdapter {
         if (!snippet.equals(""))
             tvSnippest.setText(snippet);
 
+        textDate = view.findViewById(R.id.textDate);
+        textDate.setText(latestReading);
 
-        setupChart(view);
+        if(waterLevel.size()>0){
+            textWaterLevel = view.findViewById(R.id.textWaterLevel);
+            textWaterLevel.setText("Water Level: " + waterLevel.get(waterLevel.size() - 1).getY() + "m");
+        }
+        if(rainfall.size()>0){
+            textRainfall = view.findViewById(R.id.textRainfall);
+            textRainfall.setText("Rainfall Amount: " + rainfall.get(rainfall.size() - 1).getY() + "mm");
+        }
+
+
     }
 
     @Override

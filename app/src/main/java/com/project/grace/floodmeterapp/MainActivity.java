@@ -322,6 +322,9 @@ public class MainActivity extends AppCompatActivity
                     fragment.setArguments(bundle);
                 }
                 break;
+            case R.id.nav_info:
+                    fragment = new Information();
+                    break;
             case R.id.nav_logout:
                 FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));

@@ -240,7 +240,7 @@ public class Graph extends Fragment {
                     JSONArray jsonArray = jsonObject.getJSONArray("Data");
                     //For Values
                     int pos = 0;
-                    for (int i = jsonArray.length() - 1; i >= 0; i--) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jObject = jsonArray.getJSONObject(i);
                         float waterLevel = Float.parseFloat(jObject.getString("Waterlevel"));
                         float rainFallAmount = Float.parseFloat(jObject.getString("Rainfall Amount"));
@@ -273,7 +273,7 @@ public class Graph extends Fragment {
                     JSONArray jsonArray = jsonObject.getJSONArray("Data");
                     //For Values
                     int pos = 0;
-                    for (int i = jsonArray.length() - 1; i >= 0; i--) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jObject = jsonArray.getJSONObject(i);
                         String dateRecord = jObject.getString("Datetime Read");
                         float waterLevel = Float.parseFloat(jObject.getString("Waterlevel"));
@@ -306,10 +306,9 @@ public class Graph extends Fragment {
                     JSONArray jsonArray = jsonObject.getJSONArray("Data");
                     //For Values
                     int pos = 0;
-                    for (int i = jsonArray.length() - 1; i >= 0; i--) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jObject = jsonArray.getJSONObject(i);
                         float waterLevel = Float.parseFloat(jObject.getString("Waterlevel"));
-
                         float rainFallAmount = Float.parseFloat(jObject.getString("Rainfall Amount"));
 
                         wlmsDataMatina.add(new Entry((float) (pos + 2), waterLevel));
@@ -318,6 +317,7 @@ public class Graph extends Fragment {
                         // here you put ean as key and nr as value
                     }
                 }
+
 
                 setupChart(rainfallDataMatina, wlmsDataMatina);
 

@@ -1,5 +1,6 @@
 package com.project.grace.floodmeterapp;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -37,6 +38,7 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
     private ImageView imageView;
     private String title;
     private String snippet;
+    private ProgressDialog progressDialog;
 
     public CustomInfoWindow(Context context) {
         mContext = context;
@@ -61,17 +63,15 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
         if (!snippet.equals(""))
             tvSnippest.setText(snippet);
 
-        imageView = mWindow.findViewById(R.id.pic);
 
         mStorageRef = FirebaseStorage.getInstance().getReference("crowdsource").child(thisDate);
         ImageStorageSync sync = new ImageStorageSync();
         sync.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
     }
+
 
     @Override
     public View getInfoWindow(Marker marker) {
-
         renderWindowText(marker, mWindow);
         return mWindow;
     }
@@ -92,10 +92,20 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
             try {
                 final File localFile = File.createTempFile("Images", "bmp");
                 ref.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
-                    my_image = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    my_image = BitmapFactory.decodeFile(localFile.getAbsolutePath(), options);
+                    Bitmap resized = Bitmap.createScaledBitmap(my_image, 32, 32, true);
+                    my_image = resized;
+                    imageView = mWindow.findViewById(R.id.pic);
+//                    if (my_image != null)
+//                        imageView.setImageBitmap(my_image);
+//                    else
+
                     imageView.setImageBitmap(my_image);
                 }).addOnFailureListener(e -> {
                     Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+                    imageView = mWindow.findViewById(R.id.pic);
                     imageView.setImageResource(R.drawable.camera);
                 });
             } catch (IOException e) {
@@ -106,12 +116,17 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            imageView.setImageBitmap(my_image);
+            if (progressDialog != null)
+                progressDialog.dismiss();
+            super.onPostExecute(aVoid);
         }
 
         @Override
         protected void onPreExecute() {
-
+            progressDialog = ProgressDialog.show(mContext,
+                "Fetching API Data...",
+                "Please patiently wait.");
+            super.onPreExecute();
         }
 
         @Override

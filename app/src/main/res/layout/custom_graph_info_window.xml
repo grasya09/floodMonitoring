@@ -10,27 +10,50 @@
         android:orientation="vertical"
         android:background="@color/common_google_signin_btn_text_light_default">
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/line_chart_graph"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:id="@+id/textDate"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="TextView"
+            android:layout_gravity="center_horizontal"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/textWaterLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:layout_gravity="center_horizontal"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/textRainfall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:layout_gravity="center_horizontal"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12dp"
-            android:textStyle="bold"
+            android:layout_gravity="center_horizontal"
+            android:text="Place"
             android:textColor="@color/cardview_light_background"
-            android:layout_gravity="center_horizontal"/>
+            android:textSize="12dp"
+            android:textStyle="bold" />
+
         <TextView
             android:id="@+id/snippet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="10dp"
+            android:layout_gravity="center_horizontal"
+            android:text="Description"
             android:textColor="@color/cardview_light_background"
-            android:layout_gravity="center_horizontal"/>
+            android:textSize="10dp" />
 
     </LinearLayout>
 
