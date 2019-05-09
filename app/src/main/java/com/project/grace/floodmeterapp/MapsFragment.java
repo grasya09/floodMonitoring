@@ -229,8 +229,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
     private void setupMapMarkers() throws ExecutionException, InterruptedException {
 //
 
-        int height = 52;
-        int width = 52;
+        int height = 64;
+        int width = 64;
         BitmapDrawable bit = null;
         Bitmap b, smallMarker;
 
@@ -247,6 +247,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
                                 .title("No Rain")
                                 .snippet(rf.getUserID()))
                                 .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+
                             break;
                         case "Light Rainfall":
                             bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.rain_low);
@@ -254,7 +255,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
                             smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
                             map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon()))
-                                .title("Light rainfall")
+                                .title("Light rainfall \n" + rf.getDateAdded())
                                 .snippet(rf.getUserID()))
                                 .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
 
@@ -265,7 +266,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
                             smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
                             map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon()))
-                                .title("Moderate rainfall")
+                                .title("Moderate rainfall \n"  + rf.getDateAdded())
                                 .snippet(rf.getUserID()))
                                 .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
                             break;
@@ -275,20 +276,61 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
                             smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
                             map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon()))
-                                .title("Heavy rainfall")
+                                .title("Heavy rainfall \n"  + rf.getDateAdded())
                                 .snippet(rf.getUserID()))
                                 .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
                             break;
-                       /* case "Thunderstorm":
-                            bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.thunder);
+                    }
+
+
+                    height = 32;
+                    width = 32;
+
+                    switch (rf.getGeoTag()) {
+                        case "Knee":
+                            bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.flood_knee);
                             b = bit.getBitmap();
                             smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
                             map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon()))
-                                .title("Thunderstorm")
+                                .title("Cloudy")
                                 .snippet(rf.getUserID()))
                                 .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-                            break;*/
+                            map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon()))
+                                .title("Cloudy")
+                                .snippet(rf.getUserID()))
+                                .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                            break;
+                        case "Ankle":
+                            bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.flood_ankle);
+                            b = bit.getBitmap();
+                            smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+                            map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon()))
+                                .title("Light rainfall")
+                                .snippet(rf.getUserID()))
+                                .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                            break;
+                        case "Above Ankle":
+                            bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.flood_aboveankle);
+                            b = bit.getBitmap();
+                            smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+                            map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon()))
+                                .title("Above Ankle")
+                                .snippet(rf.getUserID()))
+                                .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                            break;
+                        case "Heel":
+                            bit = (BitmapDrawable) view.getResources().getDrawable(R.drawable.flood_heel);
+                            b = bit.getBitmap();
+                            smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+                            map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon()))
+                                .title("Heel")
+                                .snippet(rf.getUserID()))
+                                .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                            break;
                     }
                 } else {
 
@@ -297,7 +339,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
                     smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
 
                     map.addMarker(new MarkerOptions().position(new LatLng(rf.getLat(), rf.getLon()))
-                        .title("No Rating")
+                        .title("No Rating ")
                         .snippet(rf.getUserID()))
                         .setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
 

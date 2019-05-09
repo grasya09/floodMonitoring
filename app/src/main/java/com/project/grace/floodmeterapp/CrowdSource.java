@@ -9,6 +9,7 @@ public class CrowdSource{
     private int crowdsource;
     private String userID;
     private String tag;
+    private String geoTag;
     private String dateAdded;
     private double lat;
     private double lon;
@@ -17,6 +18,14 @@ public class CrowdSource{
 
     public CrowdSource(int crowdsource) {
         this.crowdsource = crowdsource;
+    }
+
+    public String getGeoTag() {
+        return geoTag;
+    }
+
+    public void setGeoTag(String geoTag) {
+        this.geoTag = geoTag;
     }
 
     public String getUserID() {

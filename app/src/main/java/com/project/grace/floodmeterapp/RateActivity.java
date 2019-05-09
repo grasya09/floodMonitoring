@@ -51,6 +51,7 @@ public class RateActivity extends AppCompatActivity {
     private FirebaseDatabase database;
     private DatabaseReference myRef;
     private String thisDate;
+    private String geoTag;
     private SpinnerAdapter adapter;
     private String weatherInfo;
     private FusedLocationProviderClient client;
@@ -87,6 +88,34 @@ public class RateActivity extends AppCompatActivity {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
+        });
+
+
+        RadioButton knee = findViewById(R.id.radio_knee);
+        RadioButton halfKnee = findViewById(R.id.radio_halfKnee);
+        RadioButton avoveAnkle = findViewById(R.id.radio_aboveAnkle);
+        RadioButton ankle = findViewById(R.id.radio_angkle);
+        RadioButton heel = findViewById(R.id.radio_heel);
+
+
+        knee.setOnClickListener(v -> {
+            geoTag = "Knee";
+        });
+
+        halfKnee.setOnClickListener(v -> {
+            geoTag = "Half Knee";
+        });
+
+        avoveAnkle.setOnClickListener(v -> {
+            geoTag = "Above Ankle";
+        });
+
+        ankle.setOnClickListener(v -> {
+            geoTag = "Ankle";
+        });
+
+        heel.setOnClickListener(v -> {
+            geoTag = "Heel";
         });
 
 
@@ -184,6 +213,7 @@ public class RateActivity extends AppCompatActivity {
                 }
 
                 CrowdSource cs = new CrowdSource();
+                cs.setGeoTag(geoTag);
                 cs.setCrowdsource(0);
                 cs.setLat((double) positionX);
                 cs.setLon((double) positionY);
