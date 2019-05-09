@@ -191,7 +191,7 @@ public class StatisticsFragment extends Fragment implements View.OnClickListener
                             case "Light Rainfall":
                                 lightRain++;
                                 break;
-                            case "Medium Rainfall":
+                            case "Moderate Rainfall":
                                 mediumRain++;
                                 break;
                             case "Heavy Rainfall":
@@ -209,20 +209,20 @@ public class StatisticsFragment extends Fragment implements View.OnClickListener
 
                 entries.add(new BarEntry(1f, cloudy, "Cloudy"));
                 entries.add(new BarEntry(2f, lightRain, "Light Rainfall"));
-                entries.add(new BarEntry(3f, mediumRain, "Medium Rainfall"));
+                entries.add(new BarEntry(3f, mediumRain, "Moderate Rainfall"));
                 entries.add(new BarEntry(4f, heavyRain, "Heavy Rainfall"));
                 entries.add(new BarEntry(5f, thunderstorm, "Thunderstorm"));
                 entries.add(new BarEntry(6f, unknown, "Unknown Ratings."));
 
 
                 if (entries.size() > 0) {
-                    String[] dataLables = new String[]{"Cloudy", "Light Rainfall", "Medium Rainfall", "Heavy Rainfall", "Thunderstorm", "Unknown"};
+                    String[] dataLables = new String[]{"Cloudy", "Light Rainfall", "Moderate Rainfall", "Heavy Rainfall", "Thunderstorm", "Unknown"};
                     BarDataSet barSet = new BarDataSet(entries, "");
                     ArrayList<IBarDataSet> barDataSet = new ArrayList<>();
                     ArrayList<String> labels = new ArrayList<>();
                     Collections.addAll(labels, dataLables);
 
-                    barSet.setStackLabels(new String[]{"Cloudy", "Light Rainfall", "Medium Rainfall", "Heavy Rainfall", "Thunderstorm"});
+                    barSet.setStackLabels(new String[]{"Cloudy", "Light Rainfall", "Moderate Rainfall", "Heavy Rainfall", "Thunderstorm"});
                     barSet.setColor(Color.rgb(76, 136, 247));
                     barSet.setBarBorderColor(Color.rgb(243, 106, 53));
                     barSet.setValueTextColor(Color.rgb(254, 254, 254));

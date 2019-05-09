@@ -153,11 +153,11 @@ public class RateActivity extends AppCompatActivity {
         myRef = database.getReference("crowdsource").child(thisDate);
 
         ArrayList<ItemData> list = new ArrayList<>();
-        list.add(new ItemData("Cloudy", R.mipmap.ic_cloudy));
+        list.add(new ItemData("No Rain", R.mipmap.ic_cloudy));
         list.add(new ItemData("Light Rainfall", R.mipmap.ic_rain_low));
-        list.add(new ItemData("Medium Rainfall", R.mipmap.ic_rain_medium));
+        list.add(new ItemData("Moderate Rainfall", R.mipmap.ic_rain_medium));
         list.add(new ItemData("Heavy Rainfall", R.mipmap.ic_rain_high));
-        list.add(new ItemData("Thunderstorm", R.mipmap.ic_rain_thunder));
+       // list.add(new ItemData("Thunderstorm", R.mipmap.ic_rain_thunder));
         Spinner sp = findViewById(R.id.spinner);
 
         txtWeather = findViewById(R.id.txtWeather);
