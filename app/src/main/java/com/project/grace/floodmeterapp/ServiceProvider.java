@@ -17,6 +17,7 @@ import android.util.Log;
 import com.github.mikephil.charting.data.Entry;
 import com.project.grace.floodmeterapp.PhilSensorData.DataWorker;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -32,14 +33,29 @@ public class ServiceProvider extends Service {
     private static final String TAG = "ServiceProvider";
     private DataWorker dataWorker;
     private double[] testCases = new double[3];
-    private double[] waterLevelTests = new double[3];
-    private double[] rainFallTests = new double[3];
-    private double[] xy = new double[3];
-    private double[] getRainFallTestsSquared = new double[3];
+    private double[] waterLevelTests = new double[1];
+    private double[] rainFallTests = new double[1];
+    private double[] xy = new double[1];
+    private double[] getRainFallTestsSquared = new double[1];
+    private double yLv;
+    private double xLv;
+
+    private ArrayList<Double> waterLevelList = new ArrayList<>();
+    private ArrayList<Double> rainFallList = new ArrayList<>();
+    private ArrayList<Double> xyList = new ArrayList<>();
+    private ArrayList<Double> xSquaredList = new ArrayList<>();
+    private double summationXY;
+    private double summationXSq;
+
+//    private double[] waterLevelTests = new double[3];
+//    private double[] rainFallTests = new double[3];
+//    private double[] xy = new double[3];
+//    private double[] getRainFallTestsSquared = new double[3];
     private NotificationManager notifManager;
 
     private double max;
     private double min;
+    //double xMin = 0.0d;
     private ArrayList<Entry> matinaData = new ArrayList<>();
 
 
@@ -60,15 +76,24 @@ public class ServiceProvider extends Service {
 
     }
 
-    private void setupNotification(double y) {
-        if (y > 8.5) {
+
+    private void setupNotification(double y, double lastValue) {
+//        if(xMin!=0.0d) {
+
+        if (y > lastValue) {
             sendNotification("Flood Monitoring", LEVEL_1);
-        } else if (y >= 6.5 && y <= 8.5) {
+        } else if (y == lastValue) {
             sendNotification("Flood Monitoring", LEVEL_3);
-        } else if (y < 6.5) {
+        } else if (y < lastValue) {
             sendNotification("Flood Monitoring", LEVEL_4);
         }
     }
+//        else if(xMin==0.0d) {
+//            sendNotification("Flood Monitoring", LEVEL_5);
+//        }
+//
+//
+//    }
 
     public void sendNotification(String title2, String aMessage) {
         //Get an instance of NotificationManager//
@@ -95,27 +120,27 @@ public class ServiceProvider extends Service {
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
             builder.setContentTitle(aMessage)                            // required
-                .setSmallIcon(R.mipmap.ic_launcher)   // required
-                .setContentText(this.getString(R.string.app_name)) // required
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .setTicker(aMessage)
-                .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                    .setSmallIcon(R.mipmap.ic_launcher)   // required
+                    .setContentText(this.getString(R.string.app_name)) // required
+                    .setDefaults(Notification.DEFAULT_ALL)
+                    .setAutoCancel(true)
+                    .setContentIntent(pendingIntent)
+                    .setTicker(aMessage)
+                    .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
         } else {
             builder = new NotificationCompat.Builder(this, id);
             intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
             builder.setContentTitle(aMessage)                            // required
-                .setSmallIcon(android.R.drawable.ic_popup_reminder)   // required
-                .setContentText(this.getString(R.string.app_name)) // required
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .setTicker(aMessage)
-                .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})
-                .setPriority(Notification.PRIORITY_HIGH);
+                    .setSmallIcon(android.R.drawable.ic_popup_reminder)   // required
+                    .setContentText(this.getString(R.string.app_name)) // required
+                    .setDefaults(Notification.DEFAULT_ALL)
+                    .setAutoCancel(true)
+                    .setContentIntent(pendingIntent)
+                    .setTicker(aMessage)
+                    .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})
+                    .setPriority(Notification.PRIORITY_HIGH);
         }
         Notification notification = builder.build();
         notifManager.notify(NOTIFY_ID, notification);
@@ -134,74 +159,8 @@ public class ServiceProvider extends Service {
     }
 
 
-    private double solveK() {
-        // long version
-        //var log = Math.Log(waterlevels.Length, 10);
-        //var s = 1 + 3.22;
-        //var kk = s * log;
-        double k = Math.round(1 + 3.322 * (Math.log10(matinaData.size())));
-        return k;
-    }
-
-    private double solveR() {
-        max = matinaData.get(0).getY();
-        min = matinaData.get(0).getY();
-
-        for (Entry s : matinaData) {
-            if (max < s.getY()) {
-                max = s.getY();
-            }
-            if (min > s.getY()) {
-                min = s.getY();
-            }
-        }
-        return max - min;
-    }
-
-    private double solveI() {
-        return solveR() / solveK();
-    }
-
-
-    public double solveLL() {
-        return solveI() - 1 + min;
-    }
-
-    private double solveUL() {
-        double lowerLimit = solveLL();
-        double ul = lowerLimit;
-        while (max >= ul) {
-            ul += lowerLimit + 0.01;
-        }
-        return ul;
-    }
-
-    private int intervalCount() {
-        int c = (int) (solveUL() / solveLL()) - 1;
-        return c;
-    }
-
-
-    private double rangeAbove() {
-        double a = solveUL();
-        return a;
-    }
-
-
-    public double rangeBetween() {
-        double intervalby3 = (double) intervalCount() / 3;
-        double bw = solveUL() - (solveLL() + 0.01) * Math.round(intervalby3);
-        return bw;
-    }
-
-    public double rangeBelow() {
-        double intervalby3 = (double) intervalCount() / 3;
-        double b = solveUL() - (solveLL() + 0.01) * (Math.round(intervalby3) * 2);
-        return b;
-    }
-
-
     class NotificationDataManager extends AsyncTask<Void, Void, Void> {
+        DecimalFormat df = new DecimalFormat("##00.000");
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         protected Void doInBackground(Void... voids) {
@@ -209,12 +168,17 @@ public class ServiceProvider extends Service {
             try {
 
                 while (true) {
+
                     dataWorker = new DataWorker();
-                    if (dataWorker.getMatinaBridgeAPIData().size() > 0) {
-//                    waterLevelTests[0] = 0.0;
-//                    for (Entry entry : dataWorker.getMatinaBridgeAPIData()) {
-//                        waterLevelTests[0] += (double) entry.getY();
-//                    }
+
+                    waterLevelTests[0] = 0.0;
+                    for (Entry entry : dataWorker.getMatinaBridgeAPIData()) {
+                        waterLevelTests[0] += (double) entry.getY();
+                        waterLevelList.add((double) entry.getY());
+                        yLv = (double) entry.getY();
+                    }
+
+
 //                    waterLevelTests[1] = 0.0;
 //                    for (Entry entry : dataWorker.getMintalBridgeAPIData()) {
 //                        waterLevelTests[1] += (double) entry.getY();
@@ -223,10 +187,36 @@ public class ServiceProvider extends Service {
 //                    for (Entry entry : dataWorker.getWaanBridgeAPIData()) {
 //                        waterLevelTests[2] += (double) entry.getY();
 //                    }
-//                    rainFallTests[0] = 0.0;
-//                    for (Entry entry : dataWorker.getMatinaBridgeAPIData()) {
-//                        rainFallTests[0] += (double) entry.getY();
-//                    }
+                    //Rainfall data
+                    rainFallTests[0] = 0.0;
+                    for (Entry entry : dataWorker.getMatinaRainfallAPIData()) {
+                        rainFallTests[0] += (double) entry.getY();
+                        rainFallList.add((double) entry.getY());
+                        xLv = (double) entry.getY();
+                    }
+
+
+                    for (int x = 0; x < rainFallList.size(); x++){
+                        xSquaredList.add(rainFallList.get(x) * rainFallList.get(x));
+                        xyList.add(rainFallList.get(x) * waterLevelList.get(x));
+
+                        summationXY += xyList.get(x);
+                        summationXSq += xSquaredList.get(x);
+
+                    }
+
+                    ArrayList<Double> testX = waterLevelList;
+                    ArrayList<Double> testY = rainFallList;
+                    ArrayList<Double> testXY = xyList;
+                    ArrayList<Double> testXSq = xSquaredList;
+
+                    double s = summationXSq;
+                    double t = summationXY;
+
+
+
+
+
 //                    rainFallTests[1] = 0.0;
 //                    for (Entry entry : dataWorker.getMintalBridgeAPIData()) {
 //                        rainFallTests[1] += (double) entry.getY();
@@ -235,39 +225,62 @@ public class ServiceProvider extends Service {
 //                    for (Entry entry : dataWorker.getWaanBridgeAPIData()) {
 //                        rainFallTests[2] += (double) entry.getY();
 //                    }
-//                    xy[0] = waterLevelTests[0] * rainFallTests[0];
-//                    xy[1] = waterLevelTests[1] * rainFallTests[1];
-//                    xy[1] = waterLevelTests[2] * rainFallTests[2];
-//                    getRainFallTestsSquared[0] = Math.pow(waterLevelTests[0], 2);
-//                    getRainFallTestsSquared[1] = Math.pow(waterLevelTests[1], 2);
-//                    getRainFallTestsSquared[2] = Math.pow(waterLevelTests[2], 2);
-//                    double xMin = 0.0d;
-//                    for (double d : rainFallTests)
-//                        xMin += d;
-//                    double yMin = 0.0d;
-//                    for (double d : waterLevelTests)
-//                        yMin += d;
-//                    xMin = xMin / 3.0d;
-//                    yMin = yMin / 3.0d;
-//                    double temp1 = 0.0;
-//                    for (double d : xy)
-//                        temp1 += d;
-//                    double temp2 = 0.0;
-//                    for (double d : xy)
-//                        temp2 += d;
-//                    double b = temp1 / temp2;
-//                    double a = yMin - (b * xMin);
-//                    double y = (a * xMin) + b;
-//                    setupNotification(y);
-                        // Referenc
-                        matinaData = dataWorker.getMatinaBridgeAPIData();
-                        double average = rangeBetween();
-                        double high = rangeAbove();
-                        double low = rangeBelow();
+                    //xy[0] = waterLevelTests[0] * rainFallTests[0];
 
-                        Thread.sleep(10000);
+                    // xy[1] = waterLevelTests[1] * rainFallTests[1];
+                    // xy[1] = waterLevelTests[2] * rainFallTests[2];
+                    //getRainFallTestsSquared[0] = Math.pow(waterLevelTests[0], 2);
+                    //getRainFallTestsSquared[0] = rainFallTests[0] * rainFallTests[0];
+                    // getRainFallTestsSquared[1] = Math.pow(waterLevelTests[1], 2);
+                    // getRainFallTestsSquared[2] = Math.pow(waterLevelTests[2], 2);
+
+                    int countN = dataWorker.getMatinaBridgeAPIData().size();
+                    double xMin = 0.0d;
+                    double xTotal = 0.0d;
+                    for (double d : rainFallTests)
+                        xTotal += d;
+                    xMin= xTotal / countN;
+                    double yMin = 0.0d;
+                    double yTotal = 0.0d;
+                    for (double d : waterLevelTests)
+                        yTotal += d;
+                    yMin = yTotal /countN;
+
+                    //summation of xy
+                    double temp1 = 0.0;
+                    for (double d : xy)
+                        temp1 += d;
+
+                    //summation of x squared
+                    double temp2 = 0.0;
+                    for (double d : getRainFallTestsSquared)
+                        temp2 += d;
+
+                    //for b1
+                    double b1 = (xTotal * yTotal)/countN;
+                    double bb1 =(xTotal * xTotal)/countN;
+
+                    double fb1 = (summationXY - b1) / (summationXSq - bb1);
+
+                    //for b0
+                    double b0 = yMin - (fb1 * xMin);
+
+                    double y = b0 + (fb1 * Double.valueOf(df.format(xLv)) );
+
+//                    double b = summationXY / summationXSq;
+//                    double a = yMin - (b * xMin);
+//                    double y = (a * Double.valueOf(df.format(xLv))) + b;
+//                    double c = Double.valueOf(df.format(xLv));
+//                    double c1=c;
+                    y = Double.valueOf(df.format(y));
+
+                    if(xMin!=0) {
+                        setupNotification(y, Double.valueOf(df.format(yLv)));
                     }
+
+                    Thread.sleep(1000000);
                 }
+
 
 
             } catch (ExecutionException e) {
@@ -277,6 +290,7 @@ public class ServiceProvider extends Service {
             }
             return null;
         }
+
 
         @Override
         protected void onPostExecute(Void aVoid) {

@@ -12,10 +12,10 @@ public class Constant {
 
 
     public static final String NOTIF_TITLE = "Water level monitoring";
-    public static final String LEVEL_1 = "The water level is at most.";
+    public static final String LEVEL_1 = "The water level is is possibly increasing.";
     public static String LEVEL_2 = "The water level is up high";
-    public static final String LEVEL_3 = "The water leve is in average";
-    public static String LEVEL_4 = "The water level is good";
+    public static final String LEVEL_3 = "The water level is possible at steady rate.";
+    public static String LEVEL_4 = "The water level possibly decreasing.";
     public static String LEVEL_5 = "The water level is at least";
     public static String CHANNEL_ID = "418-FLOOD";
 

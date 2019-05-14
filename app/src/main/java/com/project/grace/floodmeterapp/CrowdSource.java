@@ -80,6 +80,7 @@ public class CrowdSource{
             + "\nLat: " + this.getLat()
             + "\nLon: " + this.getLon()
             + "\nDate: " + this.getDateAdded()
-            + "\nTag: " + this.getTag();
+            + "\nTag: " + this.getTag()
+                + "\ngeoTag: " + this.getGeoTag() ;
     }
 }
