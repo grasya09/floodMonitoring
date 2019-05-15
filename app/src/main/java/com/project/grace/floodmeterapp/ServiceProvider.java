@@ -23,10 +23,12 @@ import java.util.concurrent.ExecutionException;
 
 import static com.project.grace.floodmeterapp.Constant.CHANNEL_ID;
 import static com.project.grace.floodmeterapp.Constant.LEVEL_1;
-import static com.project.grace.floodmeterapp.Constant.LEVEL_2;
+//import static com.project.grace.floodmeterapp.Constant.LEVEL_2;
 import static com.project.grace.floodmeterapp.Constant.LEVEL_3;
 import static com.project.grace.floodmeterapp.Constant.LEVEL_4;
 import static com.project.grace.floodmeterapp.Constant.LEVEL_5;
+import static com.project.grace.floodmeterapp.Constant.LEVEL_6;
+import static com.project.grace.floodmeterapp.Constant.LEVEL_7;
 
 public class ServiceProvider extends Service {
 
@@ -78,7 +80,7 @@ public class ServiceProvider extends Service {
 
 
     private void setupNotification(double y, double lastValue) {
-//        if(xMin!=0.0d) {
+
 
         if (y > lastValue) {
             sendNotification("Flood Monitoring", LEVEL_1);
@@ -88,20 +90,32 @@ public class ServiceProvider extends Service {
             sendNotification("Flood Monitoring", LEVEL_4);
         }
     }
-//        else if(xMin==0.0d) {
-//            sendNotification("Flood Monitoring", LEVEL_5);
-//        }
-//
-//
-//    }
 
-    public void sendNotification(String title2, String aMessage) {
+
+    private void setupNotificationNoRain(double beforeLV, double lastValue) {
+         if(lastValue > beforeLV  ) {
+             setupNotificationNoRain("Flood Monitoring", LEVEL_5);
+         }
+        else if(lastValue == beforeLV ) {
+            setupNotificationNoRain("Flood Monitoring", LEVEL_6);
+        }
+        else if(lastValue < beforeLV  ) {
+            setupNotificationNoRain("Flood Monitoring", LEVEL_7);
+        }
+    }
+
+
+
+    /*For no rain notification*/
+
+    public void setupNotificationNoRain(String title2, String aMessage) {
         //Get an instance of NotificationManager//
         final int NOTIFY_ID = 0; // ID of notification
         String id = CHANNEL_ID; // default_channel_id
         String title = title2; // Default Channel
         Intent intent;
         PendingIntent pendingIntent;
+
         NotificationCompat.Builder builder;
         if (notifManager == null) {
             notifManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -119,29 +133,97 @@ public class ServiceProvider extends Service {
             intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-            builder.setContentTitle(aMessage)                            // required
+            builder.setContentTitle(this.getString(R.string.app_name))                            // required
                     .setSmallIcon(R.mipmap.ic_launcher)   // required
-                    .setContentText(this.getString(R.string.app_name)) // required
+                    .setContentText(aMessage)
+                    //.setContentText(this.getString(R.string.app_name)) // required
                     .setDefaults(Notification.DEFAULT_ALL)
                     .setAutoCancel(true)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(aMessage))
                     .setContentIntent(pendingIntent)
                     .setTicker(aMessage)
                     .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+
         } else {
             builder = new NotificationCompat.Builder(this, id);
             intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-            builder.setContentTitle(aMessage)                            // required
+            builder.setContentTitle(this.getString(R.string.app_name))                            // required
                     .setSmallIcon(android.R.drawable.ic_popup_reminder)   // required
-                    .setContentText(this.getString(R.string.app_name)) // required
+                    .setContentText(aMessage)
+                    //.setContentText(this.getString(R.string.app_name)) // required
                     .setDefaults(Notification.DEFAULT_ALL)
                     .setAutoCancel(true)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(aMessage))
                     .setContentIntent(pendingIntent)
                     .setTicker(aMessage)
                     .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})
                     .setPriority(Notification.PRIORITY_HIGH);
         }
+
+
+        Notification notification = builder.build();
+        notifManager.notify(NOTIFY_ID, notification);
+    }
+    /*End of No rain notification*/
+
+
+    public void sendNotification(String title2, String aMessage) {
+        //Get an instance of NotificationManager//
+        final int NOTIFY_ID = 0; // ID of notification
+        String id = CHANNEL_ID; // default_channel_id
+        String title = title2; // Default Channel
+        Intent intent;
+        PendingIntent pendingIntent;
+
+        NotificationCompat.Builder builder;
+        if (notifManager == null) {
+            notifManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = notifManager.getNotificationChannel(id);
+            if (mChannel == null) {
+                mChannel = new NotificationChannel(id, title, importance);
+                mChannel.enableVibration(true);
+                mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                notifManager.createNotificationChannel(mChannel);
+            }
+            builder = new NotificationCompat.Builder(this, id);
+            intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+            builder.setContentTitle(this.getString(R.string.app_name))                            // required
+                    .setSmallIcon(R.mipmap.ic_launcher)   // required
+                    .setContentText(aMessage)
+                    //.setContentText(this.getString(R.string.app_name)) // required
+                    .setDefaults(Notification.DEFAULT_ALL)
+                    .setAutoCancel(true)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(aMessage))
+                    .setContentIntent(pendingIntent)
+                    .setTicker(aMessage)
+                    .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+
+        } else {
+            builder = new NotificationCompat.Builder(this, id);
+            intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+            builder.setContentTitle(this.getString(R.string.app_name))                            // required
+                    .setSmallIcon(android.R.drawable.ic_popup_reminder)   // required
+                    .setContentText(aMessage)
+                    //.setContentText(this.getString(R.string.app_name)) // required
+                    .setDefaults(Notification.DEFAULT_ALL)
+                    .setAutoCancel(true)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(aMessage))
+                    .setContentIntent(pendingIntent)
+                    .setTicker(aMessage)
+                    .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})
+                    .setPriority(Notification.PRIORITY_HIGH);
+        }
+
+
         Notification notification = builder.build();
         notifManager.notify(NOTIFY_ID, notification);
     }
@@ -234,6 +316,9 @@ public class ServiceProvider extends Service {
                     // getRainFallTestsSquared[1] = Math.pow(waterLevelTests[1], 2);
                     // getRainFallTestsSquared[2] = Math.pow(waterLevelTests[2], 2);
 
+                    double sss = waterLevelList.get(waterLevelList.size()-2);
+                    double ss = yLv;
+
                     int countN = dataWorker.getMatinaBridgeAPIData().size();
                     double xMin = 0.0d;
                     double xTotal = 0.0d;
@@ -276,6 +361,9 @@ public class ServiceProvider extends Service {
 
                     if(xMin!=0) {
                         setupNotification(y, Double.valueOf(df.format(yLv)));
+                    }
+                    else{
+                        setupNotificationNoRain(waterLevelList.get(waterLevelList.size()-2),Double.valueOf(df.format(yLv)));
                     }
 
                     Thread.sleep(1000000);

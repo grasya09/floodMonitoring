@@ -35,7 +35,7 @@
                     android:layout_height="400px"
                     android:layout_gravity="center"
                     android:layout_margin="@dimen/input_padding"
-                    app:srcCompat="@drawable/flood_256" />
+                    app:srcCompat="@drawable/flood_256_add"/>
 
 
                 <LinearLayout
